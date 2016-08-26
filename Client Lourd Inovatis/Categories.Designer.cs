@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Categories));
             this.Categories_list = new System.Windows.Forms.ListBox();
             this.Categories_label = new System.Windows.Forms.Label();
             this.Annuler = new System.Windows.Forms.Button();
@@ -133,6 +134,7 @@
             this.Controls.Add(this.Annuler);
             this.Controls.Add(this.Categories_label);
             this.Controls.Add(this.Categories_list);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Categories";

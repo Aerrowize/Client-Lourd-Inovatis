@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Entrée));
             this.Ajouter = new System.Windows.Forms.Button();
             this.quantite = new System.Windows.Forms.TextBox();
             this.Annuler = new System.Windows.Forms.Button();
@@ -118,6 +119,7 @@
             this.Controls.Add(this.Annuler);
             this.Controls.Add(this.quantite);
             this.Controls.Add(this.Ajouter);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(720, 275);
             this.MinimumSize = new System.Drawing.Size(720, 275);

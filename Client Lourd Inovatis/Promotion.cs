@@ -16,5 +16,12 @@ namespace Client_Lourd_Inovatis
         {
             InitializeComponent();
         }
+
+        private void Annuler_Click(object sender, EventArgs e)
+        {
+            Panel panel = new Panel();
+            panel.Show();
+            this.Hide();
+        }
     }
 }

@@ -184,12 +184,20 @@ namespace Client_Lourd_Inovatis
            this.Hide();
         }
 
+        private void Promo_click(object sender, EventArgs e)
+        {
+            Promotion promo = new Promotion();
+            promo.Show();
+            this.Hide();
+        }
+
         private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
             Connexion deconnexion = new Connexion();
             deconnexion.Show();
         }
-     
+
+        
     }
 }
