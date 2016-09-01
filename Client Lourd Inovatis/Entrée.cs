@@ -17,11 +17,26 @@ namespace Client_Lourd_Inovatis
 {
     public partial class Entrée : Form
     {
-        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis_ecommerce;");
+        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis;");
 
         public Entrée() 
         {
             InitializeComponent();
+            /*conn.Open();
+
+            MySqlCommand query = new MySqlCommand("SELECT name_item FROM item", conn);
+
+            MySqlDataReader donnes = query.ExecuteReader();
+
+            Liste_produits.Items.Clear();
+
+            while (donnes.Read())
+            {
+
+                Liste_produits.Items.Add(donnes["name_item"]);
+            }
+
+            conn.Close();*/
         }
          
         public void OpenConn()
@@ -79,15 +94,16 @@ namespace Client_Lourd_Inovatis
         {
             conn.Open();
 
-            MySqlCommand query = new MySqlCommand("SELECT name_item FROM item", conn);
+            MySqlCommand query = new MySqlCommand("SELECT name FROM item", conn);
 
             MySqlDataReader donnes = query.ExecuteReader();
 
             Liste_produits.Items.Clear();
+            Liste_produits.Items.Add("Choisir un produit");
 
             while (donnes.Read())
             {
-                Liste_produits.Items.Add(donnes["name_item"]);
+                Liste_produits.Items.Add(donnes["name"]);
             }
 
             conn.Close();
@@ -96,22 +112,23 @@ namespace Client_Lourd_Inovatis
         private void Ajouter_Click(object sender, EventArgs e)
         {
             conn.Open();
-
-            string produits_choix = "";
-
-            if (Liste_produits.SelectedItem == null)
+            // SelectedIndex c'est mieux pour la requete sql 
+            if (Liste_produits.SelectedIndex == -1)
             {
+                // User case : L'utilisateur n'a pas choisi de produit
                 MessageBox.Show("Vous n'avez pas choisi de produit", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+            } else if (Liste_produits.SelectedIndex == 0) {
+                // User case : L'utilisateur a choisi et validé l'intitulé
+                MessageBox.Show("Vous n'avez pas choisi de produit mais l'intitulé de la liste", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } else {
-                    
-                produits_choix = Liste_produits.SelectedItem.ToString();
 
-                MySqlCommand produits_exist = new MySqlCommand("SELECT id_item, name_item FROM item WHERE name_item = '" + produits_choix + "'", conn);
+                int produits_choix = Liste_produits.SelectedIndex;
+
+                MySqlCommand produits_exist = new MySqlCommand("SELECT id, name FROM item WHERE id = '" + produits_choix + "'", conn);
 
                 MySqlDataReader response_produits_exist = produits_exist.ExecuteReader();
 
-                if (response_produits_exist.HasRows) 
+                if (response_produits_exist.HasRows && quantite.Text != "")
                 {
                     response_produits_exist.Read();
 
@@ -119,26 +136,31 @@ namespace Client_Lourd_Inovatis
 
                     long.TryParse(quantite.Text, out Quantite);
 
-                    if (Quantite == 0)
-                    {
-                        MessageBox.Show("Quantité saisie nulle", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                    if (Quantite < 0)
+                    {  
+                        // User case : L'utilisateur n'a pas saisi de quantité
+                        MessageBox.Show("Quantité saisie incorrect", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     } else {
 
-                        MySqlCommand query_update = new MySqlCommand("UPDATE item SET quantity_item = " + Quantite + " WHERE id_item = " + response_produits_exist["id_item"] + "", conn);
+                        MySqlCommand query_update = new MySqlCommand("UPDATE item SET quantity = " + Quantite + " WHERE id = " + response_produits_exist["id"] + "", conn);
 
                         response_produits_exist.Close();
 
                         MySqlDataReader response_query_update = query_update.ExecuteReader();
 
-                        MessageBox.Show("Mise en stock du produit : " + produits_choix + " pour une quantité de : " + Quantite, "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Mise en stock du produit n° : " + produits_choix + " pour une quantité de : " + Quantite, "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     }
 
-                 } else {
+                } else if (quantite.Text == "") {
+                    // User case : L'utilisateur n'a pas saisi de quantité
+                    MessageBox.Show("Quantité saisie incorrect", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } else {
+                   // User case : L'utilisateur a choisi qui a été supprimé 
                     MessageBox.Show("Le produit n'existe plus veuillez actualiser la liste", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                } 
             }
+            
             conn.Close();
         }
     }

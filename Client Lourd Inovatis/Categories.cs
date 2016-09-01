@@ -16,7 +16,7 @@ namespace Client_Lourd_Inovatis
 {
     public partial class Categories : Form
     {
-        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis_ecommerce;");
+        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis;");
         public Categories()
         {
             InitializeComponent();
@@ -87,7 +87,7 @@ namespace Client_Lourd_Inovatis
 
                 string categorie_ajoutée = categorie_a_ajoutée.ToString();
 
-                MySqlCommand verif_new_categorie_query = new MySqlCommand("SELECT name_categorie FROM categorie WHERE name_categorie = '" + categorie_ajoutée + "'", conn);
+                MySqlCommand verif_new_categorie_query = new MySqlCommand("SELECT name FROM category WHERE name = '" + categorie_ajoutée + "'", conn);
 
                 MySqlDataReader verif_new_categorie = verif_new_categorie_query.ExecuteReader();
 
@@ -97,7 +97,7 @@ namespace Client_Lourd_Inovatis
                    
                     verif_new_categorie.Close();
 
-                    MySqlCommand ajouter_new_categorie_query = new MySqlCommand("INSERT INTO categorie (name_categorie) VALUES ('"+ categorie_ajoutée +"')", conn);
+                    MySqlCommand ajouter_new_categorie_query = new MySqlCommand("INSERT INTO category (name) VALUES ('"+ categorie_ajoutée +"')", conn);
 
                     MySqlDataReader ajouter_new_categorie = ajouter_new_categorie_query.ExecuteReader();
 
@@ -131,26 +131,26 @@ namespace Client_Lourd_Inovatis
                 choix_categorie = Categories_list.SelectedItem.ToString();
 
                 // Passer la clé étrangère de la catégorie dans la table produits a NULL avant de supprimer la catégorie
-                MySqlCommand retrieve_id_categorie_query = new MySqlCommand("SELECT id_categorie FROM categorie WHERE name_categorie = '" + choix_categorie + "'", conn);
+                MySqlCommand retrieve_id_categorie_query = new MySqlCommand("SELECT id FROM category WHERE name = '" + choix_categorie + "'", conn);
 
                 MySqlDataReader id_categorie_supp = retrieve_id_categorie_query.ExecuteReader();
 
                 id_categorie_supp.Read();
 
-                string id_categorie_produit_supp_string = id_categorie_supp["id_categorie"].ToString();
+                string id_categorie_produit_supp_string = id_categorie_supp["id"].ToString();
 
                 int id_categorie_produit_supp = Convert.ToInt32(id_categorie_produit_supp_string);
 
                 id_categorie_supp.Close();
 
-                MySqlCommand fk_item_categorie1_query = new MySqlCommand("UPDATE item SET categorie_id_categorie = null WHERE categorie_id_categorie =" + id_categorie_produit_supp,conn);
+                MySqlCommand fk_item_categorie1_query = new MySqlCommand("UPDATE item SET categorie_id = null WHERE categorie_id =" + id_categorie_produit_supp,conn);
 
                 MySqlDataReader fk_item_categorie1_to_null = fk_item_categorie1_query.ExecuteReader();
 
                 fk_item_categorie1_to_null.Close();
 
                 // Suppression de la catégorie
-                MySqlCommand categories_exist_query = new MySqlCommand("DELETE FROM categorie WHERE name_categorie = '" + choix_categorie + "'", conn);
+                MySqlCommand categories_exist_query = new MySqlCommand("DELETE FROM category WHERE name = '" + choix_categorie + "'", conn);
 
                 MySqlDataReader supprimer_categorie = categories_exist_query.ExecuteReader();
 
@@ -167,7 +167,7 @@ namespace Client_Lourd_Inovatis
         {
             conn.Open();
 
-            MySqlCommand query = new MySqlCommand("SELECT name_categorie FROM categorie", conn);
+            MySqlCommand query = new MySqlCommand("SELECT name FROM category", conn);
 
             MySqlDataReader donnes = query.ExecuteReader();
 
@@ -175,7 +175,7 @@ namespace Client_Lourd_Inovatis
 
             while (donnes.Read())
             {
-                Categories_list.Items.Add(donnes["name_categorie"]);
+                Categories_list.Items.Add(donnes["name"]);
             }
 
             conn.Close();

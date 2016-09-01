@@ -13,6 +13,7 @@ using NpgsqlTypes;
 using MySql;
 using MySql.Data.MySqlClient;
 
+
 namespace Client_Lourd_Inovatis
 {
     public partial class Panel : Form
@@ -27,12 +28,12 @@ namespace Client_Lourd_Inovatis
             {
             string login = Login_text.ToString();
             string password = Mdp_text.ToString();
-            Panel_Load_Data(login, password);
+            //Panel_Load_Data(login, password);
             }
             
         }
         
-        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis_ecommerce;");
+        MySqlConnection conn = new MySqlConnection("Server=127.0.0.1;Port=3306;UID=root;Password=;Database=inovatis;");
 
         public void OpenConn()
         {
@@ -58,11 +59,11 @@ namespace Client_Lourd_Inovatis
             }
         }
 
-        protected void Panel_Load_Data(string login,string password)
+        /*protected void Panel_Load_Data(string login,string password)
         {
             conn.Open();
 
-            MySqlCommand recup_id_user_query = new MySqlCommand("SELECT id_login FROM login WHERE email_login = '" + login + "'",conn);
+            MySqlCommand recup_id_user_query = new MySqlCommand("SELECT id FROM login WHERE email = '" + login + "'",conn);
 
             MySqlDataReader recup_id_user = recup_id_user_query.ExecuteReader();
 
@@ -98,7 +99,7 @@ namespace Client_Lourd_Inovatis
             }
            
             conn.Close();
-        }
+        }*/
        
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -125,7 +126,7 @@ namespace Client_Lourd_Inovatis
         {
             conn.Open();
 
-            string sql = "SELECT id_item, name_item, desc_item, quantity_item, prix_item, categorie_id_categorie FROM item";
+            string sql = "SELECT `id`,`category_id`,`name`,`desc`,`quantity`,`prix` FROM `item` WHERE 1";
             
             MySqlDataAdapter da = new MySqlDataAdapter(sql, conn);
             
@@ -147,13 +148,13 @@ namespace Client_Lourd_Inovatis
 
             conn.Open();
 
-            MySqlCommand query = new MySqlCommand("SELECT name_categorie FROM categorie", conn);
+            MySqlCommand query = new MySqlCommand("SELECT `name` FROM category", conn);
 
             MySqlDataReader query_exe = query.ExecuteReader();
 
             while (query_exe.Read())
             {
-               categories.Categories_list.Items.Add(query_exe["name_categorie"]);
+               categories.Categories_list.Items.Add(query_exe["name"]);
             }
 
             conn.Close();
@@ -169,14 +170,15 @@ namespace Client_Lourd_Inovatis
            entrer.Show();
            
            conn.Open();
-
-            MySqlCommand query = new MySqlCommand("SELECT name_item FROM item", conn);
+            // Ajouter ORDER BY ASC sur la clé primaire
+            MySqlCommand query = new MySqlCommand("SELECT id,`name` FROM item ORDER BY id ASC", conn);
 
             MySqlDataReader query_exe = query.ExecuteReader();
+            entrer.Liste_produits.Items.Add("Choisir un produit");
 
             while (query_exe.Read())
             {
-                entrer.Liste_produits.Items.Add(query_exe["name_item"]);
+                entrer.Liste_produits.Items.Add(query_exe["name"]);
             }
             
            conn.Close();
@@ -188,6 +190,30 @@ namespace Client_Lourd_Inovatis
         {
             Promotion promo = new Promotion();
             promo.Show();
+
+            conn.Open();
+
+            MySqlCommand query = new MySqlCommand("SELECT `name` FROM item", conn);
+
+            MySqlDataReader query_exe = query.ExecuteReader();
+
+            while (query_exe.Read())
+            {
+               promo.liste_produit_promo.Items.Add(query_exe["name"]);
+            }
+
+            query_exe.Close();
+
+            MySqlCommand query2 = new MySqlCommand("SELECT `id`,`date_debut`,`date_fin` FROM promo", conn);
+
+            MySqlDataReader query_exe2 = query2.ExecuteReader();
+
+            while (query_exe2.Read())
+            {
+                promo.Liste_promo.Items.Add("promo n° : "+ query_exe2["id"] + " du " + query_exe2["date_debut"] + "jusqu'au : "+ query_exe2["date_fin"] +"");
+            }
+
+            conn.Close();
             this.Hide();
         }
 
